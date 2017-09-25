@@ -1,28 +1,28 @@
 import numpy as np
 
+# CARE: z can be a matrix
+# CARE: differentiating, given the value of f(z), not z
+
 
 def sigmoid(z):
-    return 1 + np.exp(-z)
+    return 1/(1 + np.exp(-z))
 
 
-def diff_sigmoid(z):
-    return sigmoid(z) * (1 - sigmoid(z))
+def diff_sigmoid(fz):
+    return fz * (1 - fz)
 
 
 def tanh(z):
     return np.tanh(z)
 
 
-def diff_tanh(z):
-    return 1 - np.power(tanh(z), 2)
+def diff_tanh(fz):
+    return 1 - np.power(fz, 2)
 
 
 def relu(z):
-    return max(0, z)
+    return np.maximum(z, 0)
 
 
 def diff_relu(z):
-    if z > 0:
-        return 1
-    else:
-        return 0
+    return 1 * (z > 0)

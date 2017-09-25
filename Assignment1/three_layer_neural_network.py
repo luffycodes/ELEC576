@@ -78,11 +78,11 @@ class NeuralNetwork(object):
         :param type: Tanh, Sigmoid, or ReLU
         :return: activations
         '''
-        if type == 'Tanh':
+        if type == 'tanh':
             return um.tanh(z)
-        if type == 'Sigmoid':
+        if type == 'sigmoid':
             return um.sigmoid(z)
-        if type == 'ReLU':
+        if type == 'relu':
             return um.relu(z)
 
         return None
@@ -115,11 +115,17 @@ class NeuralNetwork(object):
 
         # YOU IMPLEMENT YOUR feedforward HERE
 
-        # self.z1 =
-        # self.a1 =
-        # self.z2 =
+        # self.z1 - 200 * 3; X - 200 * 2; W1 - 2 * 3
+        self.z1 = X.dot(self.W1) + self.b1
+
+        # self.a1 - 200 * 3
+        self.a1 = actFun(self.z1)
+
+        # self.z2, exp_scores, self.probes - 200 * 2
+        self.z2 = self.a1.dot(self.W2) + self.b2
         exp_scores = np.exp(self.z2)
         self.probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
+
         return None
 
     def calculate_loss(self, X, y):
@@ -134,10 +140,12 @@ class NeuralNetwork(object):
         # Calculating the loss
 
         # YOU IMPLEMENT YOUR CALCULATION OF THE LOSS HERE
+        # Implementing cross entropy loss
+        # \sum - (correct probability) * log (predicted probability)
 
         data_loss = 0
 
-        # Add regulatization term to loss (optional)
+        # Add regularization term to loss (optional)
         data_loss += self.reg_lambda / 2 * (np.sum(np.square(self.W1)) + np.sum(np.square(self.W2)))
         return (1. / num_examples) * data_loss
 
@@ -210,8 +218,9 @@ class NeuralNetwork(object):
 
 
 def main():
-    neuralNetwork = NeuralNetwork(10, 5, 10)
-    neuralNetwork.actFun(0.5, 'Tanh')
+    X, y = generate_data()
+    model = NeuralNetwork(nn_input_dim=2, nn_hidden_dim=3 , nn_output_dim=2, actFun_type='tanh')
+    model.calculate_loss(X, y)
     ''' generate and visualize Make-Moons dataset '''
     # X, y = generate_data()
     # plt.scatter(X[:, 0], X[:, 1], s=40, c=y, cmap=plt.cm.Spectral)
