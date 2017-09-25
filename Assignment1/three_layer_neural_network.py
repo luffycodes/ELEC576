@@ -1,5 +1,6 @@
 __author__ = 'tan_nguyen'
 import numpy as np
+import Utils.maths as um
 from sklearn import datasets, linear_model
 import matplotlib.pyplot as plt
 
@@ -39,7 +40,7 @@ def plot_decision_boundary(pred_func, X, y):
 
 ########################################################################################################################
 ########################################################################################################################
-# YOUR ASSSIGMENT STARTS HERE
+# YOUR ASSIGNMENT STARTS HERE
 # FOLLOW THE INSTRUCTION BELOW TO BUILD AND TRAIN A 3-LAYER NEURAL NETWORK
 ########################################################################################################################
 ########################################################################################################################
@@ -77,8 +78,12 @@ class NeuralNetwork(object):
         :param type: Tanh, Sigmoid, or ReLU
         :return: activations
         '''
-
-        # YOU IMPLMENT YOUR actFun HERE
+        if type == 'Tanh':
+            return um.tanh(z)
+        if type == 'Sigmoid':
+            return um.sigmoid(z)
+        if type == 'ReLU':
+            return um.relu(z)
 
         return None
 
@@ -90,7 +95,12 @@ class NeuralNetwork(object):
         :return: the derivatives of the activation functions wrt the net input
         '''
 
-        # YOU IMPLEMENT YOUR diff_actFun HERE
+        if type == 'Tanh':
+            return um.diff_tanh(z)
+        if type == 'Sigmoid':
+            return um.diff_sigmoid(z)
+        if type == 'ReLU':
+            return um.diff_relu(z)
 
         return None
 
@@ -200,6 +210,8 @@ class NeuralNetwork(object):
 
 
 def main():
+    neuralNetwork = NeuralNetwork(10, 5, 10)
+    neuralNetwork.actFun(0.5, 'Tanh')
     ''' generate and visualize Make-Moons dataset '''
     # X, y = generate_data()
     # plt.scatter(X[:, 0], X[:, 1], s=40, c=y, cmap=plt.cm.Spectral)
