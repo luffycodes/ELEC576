@@ -95,11 +95,11 @@ class NeuralNetwork(object):
         :return: the derivatives of the activation functions wrt the net input
         '''
 
-        if type == 'Tanh':
+        if type == 'tanh':
             return um.diff_tanh(z)
-        if type == 'Sigmoid':
+        if type == 'sigmoid':
             return um.diff_sigmoid(z)
-        if type == 'ReLU':
+        if type == 'relu':
             return um.diff_relu(z)
 
         return None
