@@ -143,7 +143,7 @@ class NeuralNetwork(object):
         # Implementing cross entropy loss
         # \sum - (correct probability) * log (predicted probability)
 
-        data_loss = 0
+        data_loss = sum(self.probs[:, 0] * y) + sum(self.probs[:, 1] * (1 - y))
 
         # Add regularization term to loss (optional)
         data_loss += self.reg_lambda / 2 * (np.sum(np.square(self.W1)) + np.sum(np.square(self.W2)))
@@ -219,7 +219,7 @@ class NeuralNetwork(object):
 
 def main():
     X, y = generate_data()
-    model = NeuralNetwork(nn_input_dim=2, nn_hidden_dim=3 , nn_output_dim=2, actFun_type='tanh')
+    model = NeuralNetwork(nn_input_dim=2, nn_hidden_dim=3, nn_output_dim=2, actFun_type='tanh')
     model.calculate_loss(X, y)
     ''' generate and visualize Make-Moons dataset '''
     # X, y = generate_data()
