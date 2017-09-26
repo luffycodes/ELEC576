@@ -142,8 +142,8 @@ class NeuralNetwork(object):
         # YOU IMPLEMENT YOUR CALCULATION OF THE LOSS HERE
         # Implementing cross entropy loss
         # \sum - (correct probability) * log (predicted probability)
-
-        data_loss = sum(self.probs[:, 0] * y) + sum(self.probs[:, 1] * (1 - y))
+        logProbs = np.log(self.probs)
+        data_loss = sum(logProbs[:, 0] * y) + sum(logProbs[:, 1] * (1 - y))
 
         # Add regularization term to loss (optional)
         data_loss += self.reg_lambda / 2 * (np.sum(np.square(self.W1)) + np.sum(np.square(self.W2)))
