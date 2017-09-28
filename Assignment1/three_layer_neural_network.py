@@ -168,13 +168,29 @@ class NeuralNetwork(object):
 
         # IMPLEMENT YOUR BACKPROP HERE
         num_examples = len(X)
-        delta3 = self.probs
-        delta3[range(num_examples), y] -= 1
         # dW2 = dL/dW2
         # db2 = dL/db2
         # dW1 = dL/dW1
         # db1 = dL/db1
-        # return dW1, dW2, db1, db2
+
+        # Credit: https://www.ics.uci.edu/~pjsadows/notes.pdf
+        # dE/dW_ji = (y_i - t_i) * h_j - [3*n] * [n*2]
+        # Mapping - W_ji ~ W_2; h_j ~ a2
+        delta3 = self.probs
+        delta3[range(num_examples), y] -= 1
+        dW2 = (self.a1.transpose()).dot(delta3)
+        db2 = np.sum(delta3, axis=0, keepdims=True)
+        da1 = delta3.dot(self.W2.transpose())
+
+        # dE/dhj = \sum (y_i -t_i) * Wji
+        # dW1 = dE/da1 * da1/dz1 * dz1/dW1
+        # da1 is the ONLY thing passed in backprop from next layer to previous layer
+        dz1 = da1 * self.diff_actFun(self.a1, self.actFun_type)
+        dz1_w1 = X.transpose()
+        dW1 = np.dot(dz1_w1, dz1)
+        db1 = np.sum(dz1, axis=0)
+
+        return dW1, dW2, db1, db2
 
     def fit_model(self, X, y, epsilon=0.01, num_passes=20000, print_loss=True):
         '''
@@ -218,17 +234,17 @@ class NeuralNetwork(object):
 
 
 def main():
-    X, y = generate_data()
-    model = NeuralNetwork(nn_input_dim=2, nn_hidden_dim=3, nn_output_dim=2, actFun_type='tanh')
-    model.calculate_loss(X, y)
-    ''' generate and visualize Make-Moons dataset '''
     # X, y = generate_data()
-    # plt.scatter(X[:, 0], X[:, 1], s=40, c=y, cmap=plt.cm.Spectral)
-    # plt.show()
+    # model = NeuralNetwork(nn_input_dim=2, nn_hidden_dim=3, nn_output_dim=2, actFun_type='tanh')
+    # model.calculate_loss(X, y)
+    ''' generate and visualize Make-Moons dataset '''
+    X, y = generate_data()
+    plt.scatter(X[:, 0], X[:, 1], s=40, c=y, cmap=plt.cm.Spectral)
+    plt.show()
 
-    # model = NeuralNetwork(nn_input_dim=2, nn_hidden_dim=3 , nn_output_dim=2, actFun_type='tanh')
-    # model.fit_model(X,y)
-    # model.visualize_decision_boundary(X,y)
+    model = NeuralNetwork(nn_input_dim=2, nn_hidden_dim=3 , nn_output_dim=2, actFun_type='sigmoid')
+    model.fit_model(X,y)
+    model.visualize_decision_boundary(X,y)
 
 
 if __name__ == "__main__":
