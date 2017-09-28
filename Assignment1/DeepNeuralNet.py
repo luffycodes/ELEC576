@@ -18,21 +18,13 @@ class DeepNeuralNet(object):
 
         for i in range(len(dimArray)):
             if i == 0:
-                layerObj = Layer(dimArray[i], inputSize, False, None, None, True, 'tanh')
+                layerObj = Layer(i, dimArray[i], inputSize, False, True, 'tanh')
             elif i == len(dimArray) - 1:
-                layerObj = Layer(dimArray[i], dimArray[i - 1], True, None, None, False, 'tanh')
+                layerObj = Layer(i, dimArray[i], dimArray[i - 1], True, False, 'tanh')
             else:
-                layerObj = Layer(dimArray[i], dimArray[i - 1], False, None, None, False, 'tanh')
+                layerObj = Layer(i, dimArray[i], dimArray[i - 1], False, False, 'tanh')
 
             self.layers.append(layerObj)
-
-            # for i in range(len(dimArray)):
-            #     if i == 0:
-            #         self.layers[i].setNeighbors(None, self.layers[i + 1])
-            #     elif i == len(dimArray) - 1:
-            #         self.layers[i].setNeighbors(self.layers[i - 1], None)
-            #     else:
-            #         self.layers[i].setNeighbors(self.layers[i - 1], self.layers[i + 1])
 
     def feedforward(self, X, actFun):
         for i in range(len(self.dimArray)):
@@ -98,7 +90,7 @@ def main():
     plt.scatter(X[:, 0], X[:, 1], s=40, c=y, cmap=plt.cm.Spectral)
     plt.show()
 
-    model = DeepNeuralNet([3, 2], 2)
+    model = DeepNeuralNet([3, 5, 7, 2], 2)
     model.fit_model(X, y)
     model.visualize_decision_boundary(X, y)
 

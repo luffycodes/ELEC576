@@ -15,14 +15,13 @@ def diff_actFun(z, type):
 
 class Layer(object):
     # W is weights that are incident on this layer
-    def __init__(self, dims, prev_layer_dims, isOutput, prevLayer, nextLayer, isFirstLayerAfterInput,
+    def __init__(self, i, dims, prev_layer_dims, isOutput, isFirstLayerAfterInput,
                  actFun_type='tanh', reg_lambda=0.01, epsilon=0.01):
+        self.i = i
         self.prev_layer_dims = prev_layer_dims
         self.dims = dims
         self.isOutput = isOutput
         self.actFun_type = actFun_type
-        self.prevLayer = prevLayer
-        self.nextLayer = nextLayer
         self.isFirstLayerAfterInput = isFirstLayerAfterInput
         self.reg_lambda = reg_lambda
         self.epsilon = epsilon
@@ -36,11 +35,10 @@ class Layer(object):
         self.a_prev = None
         self.z = None
         self.a = None
-        # self.nextLayer.a_prev = self.a  - feedforward responsibility
 
         # calc & send it back to previous layer
+        self.da = None
         self.da_prev = None  # backprop responsibility
-        # self.da = self.nextLayer.da_prev  - backprop benefit
 
         # For last layer
         self.probs = None
@@ -52,12 +50,8 @@ class Layer(object):
     #     self.da = self.nextLayer.da_prev
 
     def feedforward(self, X, actFun):
-        if self.isFirstLayerAfterInput:
-            self.z = X.dot(self.W) + self.b
-        else:
-            # self.z = self.a_prev.dot(self.W) + self.b - if playing with pointers
-            self.a_prev = X
-            self.z = X.dot(self.W) + self.b
+        self.a_prev = X
+        self.z = X.dot(self.W) + self.b
 
         self.a = actFun(self.z)
 
@@ -81,14 +75,14 @@ class Layer(object):
         elif self.isFirstLayerAfterInput:
             self.da = da
             dz = self.da * diff_actFun(self.a, self.actFun_type)
-            dz_w = X.transpose()
+            dz_w = self.a_prev.transpose()
             self.dW = np.dot(dz_w, dz)
             self.db = np.sum(dz, axis=0)
 
         else:
             self.da = da
             dz = np.array(self.da * diff_actFun(self.a, self.actFun_type))
-            dz_w = X.transpose()
+            dz_w = self.a_prev.transpose()
             self.dW = np.dot(dz_w, dz)
             self.db = np.sum(dz, axis=0)
 
