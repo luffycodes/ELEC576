@@ -174,6 +174,7 @@ class NeuralNetwork(object):
         # db1 = dL/db1
 
         # Credit: https://www.ics.uci.edu/~pjsadows/notes.pdf
+        # Credit: https://stats.stackexchange.com/questions/235528/backpropagation-with-softmax-cross-entropy
         # dE/dW_ji = (y_i - t_i) * h_j - [3*n] * [n*2]
         # Mapping - W_ji ~ W_2; h_j ~ a2
         delta3 = self.probs
