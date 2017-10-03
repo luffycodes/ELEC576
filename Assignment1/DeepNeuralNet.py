@@ -1,5 +1,5 @@
 from Utils.Plots.decisionBoundary import plot_decision_boundary
-from Utils.data import generate_data
+from Utils.data import generate_moons_data, generate_blob_data
 
 import matplotlib.pyplot as plt
 from Assignment1.Layer import Layer
@@ -86,11 +86,12 @@ class DeepNeuralNet(object):
 
 
 def main():
-    X, y = generate_data()
+    X, y = generate_blob_data()
+    X, y = generate_moons_data()
     plt.scatter(X[:, 0], X[:, 1], s=40, c=y, cmap=plt.cm.Spectral)
     plt.show()
 
-    model = DeepNeuralNet([2, 3, 2], 2, actFun_type='relu')
+    model = DeepNeuralNet([2, 3, 2], 2, actFun_type='sigmoid')
     model.fit_model(X, y)
     model.visualize_decision_boundary(X, y)
 

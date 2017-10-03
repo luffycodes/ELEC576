@@ -1,5 +1,5 @@
 from Utils.Plots.decisionBoundary import plot_decision_boundary
-from Utils.data import generate_data
+from Utils.data import generate_moons_data
 
 __author__ = 'tan_nguyen'
 import numpy as np
@@ -211,7 +211,7 @@ def main():
     # model = NeuralNetwork(nn_input_dim=2, nn_hidden_dim=3, nn_output_dim=2, actFun_type='tanh')
     # model.calculate_loss(X, y)
     ''' generate and visualize Make-Moons dataset '''
-    X, y = generate_data()
+    X, y = generate_moons_data()
     plt.scatter(X[:, 0], X[:, 1], s=40, c=y, cmap=plt.cm.Spectral)
     plt.show()
 
