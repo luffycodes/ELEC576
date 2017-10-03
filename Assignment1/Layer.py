@@ -1,27 +1,14 @@
 import numpy as np
-import Utils.maths as um
-
-
-def diff_actFun(z, type):
-    if type == 'tanh':
-        return um.diff_tanh(z)
-    if type == 'sigmoid':
-        return um.diff_sigmoid(z)
-    if type == 'relu':
-        return um.diff_relu(z)
-
-    return None
 
 
 class Layer(object):
     # W is weights that are incident on this layer
     def __init__(self, i, dims, prev_layer_dims, isOutput, isFirstLayerAfterInput,
-                 actFun_type='tanh', reg_lambda=0.01, epsilon=0.01):
+                 reg_lambda=0.01, epsilon=0.01):
         self.i = i
         self.prev_layer_dims = prev_layer_dims
         self.dims = dims
         self.isOutput = isOutput
-        self.actFun_type = actFun_type
         self.isFirstLayerAfterInput = isFirstLayerAfterInput
         self.reg_lambda = reg_lambda
         self.epsilon = epsilon
@@ -62,7 +49,7 @@ class Layer(object):
 
         return self.a
 
-    def backprop(self, X, y, da):
+    def backprop(self, X, y, da, diff_actFun):
 
         if self.isOutput:
             num_examples = len(X)
@@ -74,14 +61,14 @@ class Layer(object):
 
         elif self.isFirstLayerAfterInput:
             self.da = da
-            dz = self.da * diff_actFun(self.a, self.actFun_type)
+            dz = self.da * diff_actFun(self.a)
             dz_w = self.a_prev.transpose()
             self.dW = np.dot(dz_w, dz)
             self.db = np.sum(dz, axis=0)
 
         else:
             self.da = da
-            dz = np.array(self.da * diff_actFun(self.a, self.actFun_type))
+            dz = np.array(self.da * diff_actFun(self.a))
             dz_w = self.a_prev.transpose()
             self.dW = np.dot(dz_w, dz)
             self.db = np.sum(dz, axis=0)

@@ -8,7 +8,7 @@ import numpy as np
 
 
 class DeepNeuralNet(object):
-    def __init__(self, dimArray, inputSize, actFun_type='tanh', reg_lambda=0.01):
+    def __init__(self, dimArray, inputSize, actFun_type, reg_lambda=0.01):
         self.dimArray = dimArray
         self.inputSize = inputSize
         self.layers = []
@@ -18,11 +18,11 @@ class DeepNeuralNet(object):
 
         for i in range(len(dimArray)):
             if i == 0:
-                layerObj = Layer(i, dimArray[i], inputSize, False, True, 'tanh')
+                layerObj = Layer(i, dimArray[i], inputSize, False, True)
             elif i == len(dimArray) - 1:
-                layerObj = Layer(i, dimArray[i], dimArray[i - 1], True, False, 'tanh')
+                layerObj = Layer(i, dimArray[i], dimArray[i - 1], True, False)
             else:
-                layerObj = Layer(i, dimArray[i], dimArray[i - 1], False, False, 'tanh')
+                layerObj = Layer(i, dimArray[i], dimArray[i - 1], False, False)
 
             self.layers.append(layerObj)
 
@@ -34,17 +34,17 @@ class DeepNeuralNet(object):
                 nextLayerX = self.layers[i].feedforward(nextLayerX, actFun)
                 self.probs = nextLayerX
 
-    def backprop(self, X, y):
+    def backprop(self, X, y, diff_actFun):
         for i in range(len(self.dimArray) - 1, -1, -1):
             if i == len(self.dimArray) - 1:
-                prevLayer_da = self.layers[i].backprop(X, y, None)
+                prevLayer_da = self.layers[i].backprop(X, y, None, diff_actFun)
             else:
-                prevLayer_da = self.layers[i].backprop(X, y, prevLayer_da)
+                prevLayer_da = self.layers[i].backprop(X, y, prevLayer_da, diff_actFun)
 
     def fit_model(self, X, y, epsilon=0.01, num_passes=20000, print_loss=True):
         for i in range(0, num_passes):
             self.feedforward(X, lambda x: self.actFun(x, type=self.actFun_type))
-            self.backprop(X, y)
+            self.backprop(X, y, lambda x: self.diff_actFun(x, type=self.actFun_type))
 
             if print_loss and i % 1000 == 0:
                 print("Loss after iteration %i: %f" % (i, self.calculate_loss(X, y)))
@@ -90,7 +90,7 @@ def main():
     plt.scatter(X[:, 0], X[:, 1], s=40, c=y, cmap=plt.cm.Spectral)
     plt.show()
 
-    model = DeepNeuralNet([3, 5, 7, 2], 2)
+    model = DeepNeuralNet([2, 3, 2], 2, actFun_type='relu')
     model.fit_model(X, y)
     model.visualize_decision_boundary(X, y)
 
