@@ -172,29 +172,30 @@ def main():
         batch = mnist.train.next_batch(50)  # make the data batch, which is used in the training iteration.
 
         # validation & test accuracies every 1100 iterations
-        if i % 1100 == 0:
-            validation_accuracy, validation_summary = sess.run([accuracy, validation_summary],
-                                                               feed_dict={x: mnist.validation.images,
-                                                                          y_: mnist.validation.labels,
-                                                                          keep_prob: 1.0})
-            summary_writer.add_summary(validation_summary, i)
+        if i % 200 == 0:
+            validation_accuracy, validation_summ = sess.run([accuracy, validation_summary],
+                                                            feed_dict={x: mnist.validation.images,
+                                                                       y_: mnist.validation.labels,
+                                                                       keep_prob: 1.0})
+            summary_writer.add_summary(validation_summ, i)
             print("validation: step %d, accuracy %g" % (i, validation_accuracy))
 
-            test_accuracy, test_summary = sess.run([accuracy, test_summary],
-                                                   feed_dict={x: mnist.test.images,
-                                                              y_: mnist.test.labels,
-                                                              keep_prob: 1.0})
-            summary_writer.add_summary(test_summary)
-            print("test: step %d, accuracy %g" % (i, validation_accuracy))
+            test_accuracy, test_summ = sess.run([accuracy, test_summary],
+                                                feed_dict={x: mnist.test.images,
+                                                           y_: mnist.test.labels,
+                                                           keep_prob: 1.0})
+            summary_writer.add_summary(test_summ, i)
+            print("test: step %d, accuracy %g" % (i, test_accuracy))
 
         # the batch size is 50
         if i % 100 == 0:
             # output the training accuracy every 100 iterations
             # Update the events file which is used to monitor the training (in this case,
             # only the training loss is monitored)
-            train_accuracy, summary_str = sess.run([accuracy, summary_op], feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+            train_accuracy, summary_str = sess.run([accuracy, summary_op],
+                                                   feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
             print("training: step %d, accuracy %g" % (i, train_accuracy))
-            #summary_writer.add_summary(summary_str, i)
+            # summary_writer.add_summary(summary_str, i)
             summary_writer.flush()
 
         # save the checkpoints every 1100 iterations
