@@ -30,13 +30,17 @@ biases = {
 
 
 def RNN(x, weights, biases):
-    # x = tf.transpose(x, [1, 0, 2])
-    # x = tf.reshape(x, [-1, nInput])
-    # x = tf.split(0, nSteps, x)  # configuring so you can get it as needed for the 28 pixels
-    x = tf.unstack(x, nSteps, 1)
+    x = tf.transpose(x, [1, 0, 2])
+    x = tf.reshape(x, [-1, nInput])
+    x = tf.split(x, nSteps, 0)
+    # x = unfoldRNN(x)
     lstm_cell = rnn_cell.BasicLSTMCell(nHidden, forget_bias=1.0)
     outputs, states = rnn.static_rnn(lstm_cell, x, dtype=tf.float32)
     return tf.matmul(outputs[-1], weights['out']) + biases['out']
+
+
+def unfoldRNN(x):
+    return tf.unstack(x, nSteps, 1)
 
 
 pred = RNN(x, weights, biases)
@@ -85,8 +89,10 @@ with tf.Session() as sess:
 
         if step % test_step == 0 or step == 1:
             loss, acc, loss_summ, test_accuracy_summ = sess.run([cost, accuracy, loss_summary, test_accuracy_summary],
-                                                                feed_dict={x: mnist.test.images.reshape(len(mnist.test.images), nSteps, nInput),
-                                                                           y: mnist.test.labels})
+                                                                feed_dict={
+                                                                    x: mnist.test.images.reshape(len(mnist.test.images),
+                                                                                                 nSteps, nInput),
+                                                                    y: mnist.test.labels})
             summary_writer.add_summary(test_accuracy_summ, step)
             checkpoint_file = os.path.join(result_dir, 'checkpoint')
             saver.save(sess, checkpoint_file, global_step=step)
