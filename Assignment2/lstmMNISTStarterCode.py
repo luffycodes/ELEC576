@@ -33,8 +33,9 @@ def RNN(x, weights, biases):
     x = tf.transpose(x, [1, 0, 2])
     x = tf.reshape(x, [-1, nInput])
     x = tf.split(x, nSteps, 0)
-    # x = unfoldRNN(x)
     lstm_cell = rnn_cell.BasicLSTMCell(nHidden, forget_bias=1.0)
+    # lstmCell = rnn_cell.GRUCell(nHidden)
+    # lstmCell = rnn_cell.BasicRNNCell(nHidden)
     outputs, states = rnn.static_rnn(lstm_cell, x, dtype=tf.float32)
     return tf.matmul(outputs[-1], weights['out']) + biases['out']
 
