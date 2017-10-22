@@ -27,7 +27,7 @@ ntrain = 1000  # per class
 ntest = 100  # per class
 nclass = 10  # number of classes
 imsize = 28
-nchannels = 3
+nchannels = 1
 batchsize = 100
 
 Train = np.zeros((ntrain * nclass, imsize, imsize, nchannels))
@@ -61,7 +61,7 @@ y_ = tf.placeholder("float", shape=[None, nclass])  # tf variable for labels
 
 # model
 
-W_conv1 = weight_variable([5, 5, 3, 32])
+W_conv1 = weight_variable([5, 5, 1, 32])
 b_conv1 = bias_variable([32])
 h_conv1 = tf.nn.relu(conv2d(x, W_conv1) + b_conv1)
 h_pool1 = max_pool_2x2(h_conv1)
@@ -83,6 +83,22 @@ W_fc2 = weight_variable([1024, nclass])
 b_fc2 = bias_variable([nclass])
 
 y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
+
+# Credits: https://github.com/tensorflow/tensorflow/issues/908 - Martin-Gorner
+W1_a = W_conv1
+W1pad = tf.zeros([5, 5, 1, 1])
+W1_b = tf.concat([W1_a, W1pad, W1pad, W1pad, W1pad], 3)
+W1_c = tf.split(W1_b, 36, 3)
+W1_row0 = tf.concat(W1_c[0:6], 0)
+W1_row1 = tf.concat(W1_c[6:12], 0)
+W1_row2 = tf.concat(W1_c[12:18], 0)
+W1_row3 = tf.concat(W1_c[18:24], 0)
+W1_row4 = tf.concat(W1_c[24:30], 0)
+W1_row5 = tf.concat(W1_c[30:36], 0)
+W1_d = tf.concat([W1_row0, W1_row1, W1_row2, W1_row3, W1_row4, W1_row5], 1)
+W1_e = tf.reshape(W1_d, [1, 30, 30, 1])
+Wtag = tf.placeholder(tf.string, None)
+image_summary_t = tf.summary.image("Visualize_kernels", W1_e)
 
 # loss
 # loss, optimization, evaluation, and accuracy
